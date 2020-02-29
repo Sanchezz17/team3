@@ -11,21 +11,24 @@ namespace thegame.Game
             [0] = new GameParameters(5, 5, 5)
         };
 
-        private Guid GameId { get; }
-        private GameField Field { get; }
-        private int Score { get; set; }
+        public Guid GameId { get; }
+        public Guid UserId { get; }
+        public GameField Field { get; }
+        public int Score { get; private set; }
 
-        public Game(Guid gameId, GameField field, int score)
+        public Game(Guid gameId, Guid userId, GameField field, int score)
         {
             GameId = gameId;
+            UserId = userId;
             Field = field;
             Score = score;
         }
 
-        public Game(GameField field)
+        public Game(Guid userId, GameField field)
         {
+            UserId = userId;
             Field = field;
-            GameId = new Guid();
+            GameId = Guid.Empty;
             Score = 0;
         }
 
