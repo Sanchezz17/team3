@@ -12,17 +12,20 @@ namespace thegame.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IGameRepository _gameRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IGameFieldGenerator _gameFieldGenerator;
 
-        public GameController(IMapper mapper, IGameRepository repository, IGameFieldGenerator gameFieldGenerator)
+        public GameController(IMapper mapper, IGameRepository repository, IUserRepository userRepository,
+            IGameFieldGenerator gameFieldGenerator)
         {
             _mapper = mapper;
             _gameRepository = repository;
+            _userRepository = userRepository;
             _gameFieldGenerator = gameFieldGenerator;
         }
 
         [HttpGet("current-game")]
-        public IActionResult getCurrentGame()
+        public IActionResult GetCurrentGame()
         {
             if (Guid.TryParse(Request.Cookies["userId"], out var userId))
             {
@@ -93,6 +96,31 @@ namespace thegame.Controllers
 
             var gameDto = _mapper.Map<GameDto>(game);
             return Ok(gameDto);
+        }
+
+        [HttpPost("games/{gameId}/score")]
+        public IActionResult SaveScore([FromRoute] Guid gameId)
+        {
+            if (gameId == Guid.Empty)
+                return BadRequest();
+            var game = _gameRepository.FindById(gameId);
+            if (game == null)
+                return NotFound();
+            if (Guid.TryParse(Request.Cookies["userId"], out var userId))
+            {
+                if (userId == game.UserId && game.IsGameFinished)
+                {
+                    var user = _userRepository.FindById(userId);
+                    if (user == null)
+                        return NotFound();
+                    user.HighScore += game.Score;
+                    _userRepository.Update(user);
+                    _gameRepository.Delete(game.GameId);
+                    return NoContent();
+                }
+            }
+
+            return Forbid();
         }
     }
 }

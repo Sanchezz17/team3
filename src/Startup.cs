@@ -36,6 +36,7 @@ namespace thegame
             }, new Assembly[0]);
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddSingleton<IGameRepository, InMemoryGameRepository>();
+            services.AddSingleton<IUserRepository, InMemoryUserRepository>();
             services.AddSingleton<IGameFieldGenerator, RandomGameFieldGenerator>((s)=> new RandomGameFieldGenerator(Game.Game.Difficulties));
             services.AddMvc()
                 .AddJsonOptions(options =>
