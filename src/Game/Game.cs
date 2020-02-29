@@ -17,6 +17,7 @@ namespace thegame.Game
         public Guid UserId { get; }
         public GameField Field { get; }
         public int Score { get; private set; }
+        private int numberOfStroke;
 
         public Game(Guid gameId, Guid userId, GameField field, int score)
         {
@@ -24,6 +25,7 @@ namespace thegame.Game
             UserId = userId;
             Field = field;
             Score = score;
+            numberOfStroke = 0;
         }
 
         public Game(Guid userId, GameField field)
@@ -32,10 +34,14 @@ namespace thegame.Game
             Field = field;
             GameId = Guid.Empty;
             Score = 0;
+            numberOfStroke = 0;
         }
 
         public void MakeTurn(int color)
         {
+            numberOfStroke++;
+            var numberOfChangedCells = 0;
+            
             var originalColor = Field[0, 0];
             var queue = new Queue<(int, int)>();
             queue.Enqueue((0, 0));
@@ -44,7 +50,7 @@ namespace thegame.Game
             {
                 var (x, y) = queue.Dequeue();
                 Field[x, y] = color;
-                Score++;
+                numberOfChangedCells++;
                 visited.Add((x, y));
                 foreach (var (i, j) in GetNeighbours(x, y))
                 {
@@ -54,6 +60,8 @@ namespace thegame.Game
                     }
                 }
             }
+
+            Score += numberOfStroke * numberOfChangedCells;
         }
 
         public bool IsGameFinished => Field.Field.All(color => color == Field[0, 0]);
