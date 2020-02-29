@@ -14,13 +14,13 @@ namespace thegame.Repositories
             _userGames = new Dictionary<Guid, Game.Game>();
         }
 
-        public Game.Game FindById(Guid gameId) => _games[gameId];
+        public Game.Game FindById(Guid gameId) => _games.GetValueOrDefault(gameId);
 
-        public Game.Game FindByUserId(Guid userId) => _userGames[userId];
+        public Game.Game FindByUserId(Guid userId) => _userGames.GetValueOrDefault(userId);
 
         public Game.Game Insert(Game.Game game)
         {
-            var gameId = new Guid();
+            var gameId = Guid.NewGuid();
             var newGame = new Game.Game(gameId, game.UserId, game.Field, game.Score);
             _games[gameId] = newGame;
             _userGames[game.UserId] = newGame;
