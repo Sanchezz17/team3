@@ -3,3 +3,40 @@
     height: 512px;
     background-color: #9a937e;
 }
+
+.field {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.field td {
+    border: none;
+    padding: 0;
+}
+
+.field td:before {
+    content: '';
+    box-sizing: border-box;
+    display: block;
+    margin-top: 100%;
+}
+
+.color1 {
+    background-color: red;
+}
+
+.color2 {
+    background-color: green;
+}
+
+.color3 {
+    background-color: cyan;
+}
+
+.color4 {
+    background-color: magenta;
+}
+
+.color5 {
+    background-color: blue;
+}
