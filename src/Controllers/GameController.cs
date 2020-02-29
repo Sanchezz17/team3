@@ -1,4 +1,5 @@
 using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using thegame.DTO;
 using thegame.Game;
@@ -9,12 +10,14 @@ namespace thegame.Controllers
     [Route("api/")]
     public class GameController : Controller
     {
-        private readonly IGameRepository gameRepository;
+        private readonly IMapper _mapper;
+        private readonly IGameRepository _gameRepository;
         private readonly IGameFieldGenerator _gameFieldGenerator;
 
-        public GameController(IGameRepository repository, IGameFieldGenerator gameFieldGenerator)
+        public GameController(IMapper mapper, IGameRepository repository, IGameFieldGenerator gameFieldGenerator)
         {
-            gameRepository = repository;
+            _mapper = mapper;
+            _gameRepository = repository;
             _gameFieldGenerator = gameFieldGenerator;
         }
 
@@ -23,10 +26,11 @@ namespace thegame.Controllers
         {
             if (Guid.TryParse(Request.Cookies["userId"], out var userId))
             {
-                var game = gameRepository.FindByUserId(userId);
+                var game = _gameRepository.FindByUserId(userId);
                 if (game == null)
                     return NotFound();
-                return Ok(game);
+                var gameDto = _mapper.Map<GameDto>(game);
+                return Ok(gameDto);
             }
 
             return NotFound();
@@ -37,10 +41,11 @@ namespace thegame.Controllers
         {
             if (gameId == Guid.Empty)
                 return BadRequest();
-            var game = gameRepository.FindById(gameId);
+            var game = _gameRepository.FindById(gameId);
             if (game == null)
                 return NotFound();
-            return Ok(game);
+            var gameDto = _mapper.Map<GameDto>(game);
+            return Ok(gameDto);
         }
 
         [HttpPost("games")]
@@ -51,9 +56,9 @@ namespace thegame.Controllers
                 return BadRequest();
             if (Guid.TryParse(Request.Cookies["userId"], out var userId))
             {
-                var oldGame = gameRepository.FindByUserId(userId);
+                var oldGame = _gameRepository.FindByUserId(userId);
                 if (oldGame != null)
-                    gameRepository.Delete(oldGame.GameId);
+                    _gameRepository.Delete(oldGame.GameId);
             }
             else
             {
@@ -63,8 +68,9 @@ namespace thegame.Controllers
 
             var gameField = _gameFieldGenerator.GenerateField(createGameParametersDto.Difficulty);
             var game = new Game.Game(userId, gameField);
-            game = gameRepository.Insert(game);
-            return Ok(game);
+            game = _gameRepository.Insert(game);
+            var gameDto = _mapper.Map<GameDto>(game);
+            return Ok(gameDto);
         }
 
         [HttpPost("games/{gameId}")]
@@ -73,7 +79,7 @@ namespace thegame.Controllers
         {
             if (gameMoveDto == null || gameId == Guid.Empty)
                 return BadRequest();
-            var game = gameRepository.FindById(gameId);
+            var game = _gameRepository.FindById(gameId);
             if (game == null)
                 return NotFound();
             if (Guid.TryParse(Request.Cookies["userId"], out var userId))
@@ -81,11 +87,12 @@ namespace thegame.Controllers
                 if (userId == game.UserId)
                 {
                     game.MakeTurn(gameMoveDto.Color);
-                    gameRepository.Update(game);
+                    _gameRepository.Update(game);
                 }
             }
 
-            return Ok(game);
+            var gameDto = _mapper.Map<GameDto>(game);
+            return Ok(gameDto);
         }
     }
 }

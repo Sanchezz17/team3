@@ -28,7 +28,7 @@ namespace thegame
         {
             services.AddAutoMapper(cfg =>
             {
-                cfg.CreateMap<Game.Game, GameDTO>()
+                cfg.CreateMap<Game.Game, GameDto>()
                     .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field.Field))
                     .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Field.Height))
                     .ForMember(dest => dest.IsFinished, opt => opt.MapFrom(src => src.IsGameFinished))
