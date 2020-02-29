@@ -2,52 +2,42 @@ import React from 'react';
 import styles from './styles.css'
 
 export default class Field extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            width: 5,
+            height: 5,
+            field: [
+                0, 1, 2, 3, 4,
+                1, 2, 3, 4, 5,
+                6, 7, 1, 2, 3,
+                0, 1, 2, 3, 4,
+                7, 6, 5, 4, 3
+            ]
+        }
+    }
+
+    renderField = () => {
+        const {height} = this.state;
+        const rows = [];
+        for (let i = 0; i < height; i++) {
+            rows.push(this.renderRow(i));
+        }
+        return <table className={styles.field}>{rows}</table>
+    };
+
+    renderRow = (rowNumber) => {
+        const {width} = this.state;
+        const row = [];
+        for (let i = 0; i < width; i++) {
+            row.push(<td className={styles[`color${this.state.field[width * rowNumber + i]}`]}/>)
+        }
+        return <tr>{row}</tr>;
+    };
+
     render() {
         return (
-            <div className={styles.root}>
-                <table className={styles.field}>
-                    <tr>
-                        <td className={styles.color1}/>
-
-                        <td className={styles.color2}/>
-                        <td className={styles.color3}/>
-                        <td className={styles.color4}/>
-                        <td className={styles.color5}/>
-                    </tr>
-                    <tr>
-                        <td className={styles.color2}/>
-
-                        <td className={styles.color3}/>
-                        <td className={styles.color5}/>
-                        <td className={styles.color4}/>
-                        <td className={styles.color2}/>
-                    </tr>
-                    <tr>
-                        <td className={styles.color1}/>
-
-                        <td className={styles.color4}/>
-                        <td className={styles.color3}/>
-                        <td className={styles.color4}/>
-                        <td className={styles.color5}/>
-                    </tr>
-                    <tr>
-                        <td className={styles.color4}/>
-
-                        <td className={styles.color3}/>
-                        <td className={styles.color3}/>
-                        <td className={styles.color5}/>
-                        <td className={styles.color1}/>
-                    </tr>
-                    <tr>
-                        <td className={styles.color1}/>
-
-                        <td className={styles.color2}/>
-                        <td className={styles.color4}/>
-                        <td className={styles.color4}/>
-                        <td className={styles.color5}/>
-                    </tr>
-                </table>
-            </div>
+            <div className={styles.root}>{this.renderField()}</div>
         );
     }
 }
