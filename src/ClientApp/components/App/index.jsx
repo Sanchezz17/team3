@@ -9,7 +9,7 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             gameStarted: false,
-            mode: 0,
+            difficulty: 0,
             id: null,
             width: null,
             height: null,
@@ -30,18 +30,23 @@ export default class App extends React.Component {
         }
     };
 
-    startGame = (mode) => {
-        fetch("https://gamehack03.azurewebsites.net/games", {
+    startGame = (difficulty) => {
+        fetch("/api/games", {
             method: "POST",
-            body: JSON.stringify({mode})})
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({difficulty})})
             .then(response => response.json())
-            .then(data => this.setState({
-                id: data.id,
-                width: data.w,
-                height: data.h,
-                field: data.field,
-                gameStarted: true,
-            }))
+            .then(data => {
+                this.setState({
+                    id: data.id,
+                    width: data.width,
+                    height: data.height,
+                    field: data.field,
+                    gameStarted: true,
+                });
+            })
             .catch(e => {
                 this.setState({
                     id: -1,
@@ -71,7 +76,7 @@ export default class App extends React.Component {
                 </div>
                 {!this.state.gameStarted
                 && <div>
-                    <Gapped vertical={10}>
+                    <Gapped vertical={true} gap={10}>
                         <Button use='success' size='large' onClick={() => {
                             this.startGame(0)
                         }}>Новая игра (легкий)</Button>
@@ -86,7 +91,7 @@ export default class App extends React.Component {
                     </Gapped>
                 </div>}
                 {this.state.gameStarted &&
-                <Field field={this.state.field} width={this.state.width} height={this.state.height}/>}
+                <Field id={this.state.id} field={this.state.field} width={this.state.width} height={this.state.height}/>}
             </div>
         );
     }

@@ -5,6 +5,7 @@ export default class Field extends React.Component {
     constructor(props) {
         super(props);
         this.state = { // todo: заменить потом на props
+            id: props.id,
             width: props.width || 5,
             height: props.height || 5,
             field: props.field || [
@@ -40,9 +41,15 @@ export default class Field extends React.Component {
             }
         }
         this.setState({field: newField, dominantArea: newDominantArea});
-        // отправить запрос на бэк
+        fetch(`game/${this.props.id}`, {
+            method: "POST",
+            body: JSON.stringify({color: newColor})
+        })
+            .then(response => response.json())
+            .then(response => {
+                this.setState({field: response.field})
+            })
     };
-
 
 
     getAdjacentCells = (idx) => {
