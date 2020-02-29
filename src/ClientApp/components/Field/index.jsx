@@ -1,11 +1,14 @@
 import React from 'react';
 import styles from './styles.css'
+import Button from "@skbkontur/react-ui/Button";
 
 export default class Field extends React.Component {
     constructor(props) {
         super(props);
         this.state = { // todo: заменить потом на props
+            onChange: props.onChange,
             gameId: props.gameId,
+            isFinished: props.isFinished,
             width: props.width || 5,
             height: props.height || 5,
             field: props.field || [
@@ -32,7 +35,8 @@ export default class Field extends React.Component {
         })
             .then(response => response.json())
             .then(response => {
-                this.setState({field: response.field})
+                this.setState({field: response.field, isFinished: response.isFinished});
+                this.state.onChange(response.score);
             })
     };
 
@@ -69,9 +73,21 @@ export default class Field extends React.Component {
         return <tr>{row}</tr>;
     };
 
+    callEndGame = () => {
+        return (
+            <div>
+                <h1>Игра окончена</h1>
+                <Button use='pay' size='large'>Сохранить результат</Button>
+            </div>
+        );
+    };
+
     render() {
         return (
-            <div className={styles.root}>{this.renderField()}</div>
+            <div className={styles.root}>
+                {this.state.isFinished && this.callEndGame()}
+                {!this.state.isFinished && this.renderField()}
+            </div>
         );
     }
 }

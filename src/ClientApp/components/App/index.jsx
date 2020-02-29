@@ -8,6 +8,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isFinished: null,
             gameStarted: false,
             difficulty: 0,
             id: null,
@@ -36,10 +37,12 @@ export default class App extends React.Component {
             headers: {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify({difficulty})})
+            body: JSON.stringify({difficulty})
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({
+                    isFinished: data.isFinished,
                     gameId: data.gameId,
                     width: data.width,
                     height: data.height,
@@ -94,7 +97,9 @@ export default class App extends React.Component {
                     </Gapped>
                 </div>}
                 {this.state.gameStarted &&
-                <Field gameId={this.state.gameId} field={this.state.field} width={this.state.width} height={this.state.height}/>}
+                <Field gameId={this.state.gameId} field={this.state.field} width={this.state.width}
+                       height={this.state.height} isFinished={this.state.isFinished}
+                        onChange={(value) => {this.setState({score: value})}}/>}
             </div>
         );
     }
