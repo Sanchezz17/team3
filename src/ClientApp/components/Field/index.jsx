@@ -45,12 +45,14 @@ export default class Field extends React.Component {
 
     getAdjacentCells = (idx) => {
         const {width, height} = this.props;
-        return [
-            idx - 1,
-            idx + 1,
-            idx - width,
-            idx + width
-        ]
+        const result = [idx - width, idx + width];
+        if (idx % width !== 0) {
+            result.push(idx - 1);
+        }
+        if (idx % width !== (width - 1)) {
+            result.push(idx + 1);
+        }
+        return result
             .filter(i => i >= 0 && i < width * height);
     };
 
