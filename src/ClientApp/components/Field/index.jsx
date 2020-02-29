@@ -31,6 +31,7 @@ export default class Field extends React.Component {
     };
 
     onClickMove = (event) => {
+        const {field, width} = this.state; // todo: заменить на props
         this.makeMove(event.target.cellIndex + event.target.parentNode.rowIndex * width);
     };
 
