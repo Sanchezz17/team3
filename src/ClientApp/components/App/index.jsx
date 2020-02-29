@@ -40,7 +40,7 @@ export default class App extends React.Component {
             .then(response => response.json())
             .then(data => {
                 this.setState({
-                    id: data.id,
+                    gameId: data.gameId,
                     width: data.width,
                     height: data.height,
                     field: data.field,
@@ -88,10 +88,13 @@ export default class App extends React.Component {
                         }}>Новая игра (сложный)</Button>
                         <Button use='primary' size='large' onClick={() => {
                         }}>Таблица лидеров</Button>
+                        <Button use='pay' size='large' onClick={() => {
+                            this.startGame(0)
+                        }}>Следить за игрой</Button>
                     </Gapped>
                 </div>}
                 {this.state.gameStarted &&
-                <Field id={this.state.id} field={this.state.field} width={this.state.width} height={this.state.height}/>}
+                <Field gameId={this.state.gameId} field={this.state.field} width={this.state.width} height={this.state.height}/>}
             </div>
         );
     }

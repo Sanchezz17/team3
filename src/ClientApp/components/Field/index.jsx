@@ -5,7 +5,7 @@ export default class Field extends React.Component {
     constructor(props) {
         super(props);
         this.state = { // todo: заменить потом на props
-            id: props.id,
+            gameId: props.gameId,
             width: props.width || 5,
             height: props.height || 5,
             field: props.field || [
@@ -23,26 +23,11 @@ export default class Field extends React.Component {
         const {field, width} = this.state; // todo: заменить на props
         const dominantArea = this.state.dominantArea;
         const newColor = field[event.target.cellIndex + event.target.parentNode.rowIndex * width];
-        // оптимистичный рендеринг todo: после реализации сервера убрать
-        const newField = field.slice();
-        const newDominantArea = dominantArea.slice();
-        for (const idx of newDominantArea) {
-            newField[idx] = newColor;
-        }
-        const queue = dominantArea.slice();
-        while (queue.length) {
-            const currentIdx = queue.shift();
-            for (const idx of this.getAdjacentCells(currentIdx)) {
-                if (field[idx] === newColor && !newDominantArea.includes(idx)) {
-                    newDominantArea.push(idx);
-                    newField[idx] = newColor;
-                    queue.push(idx);
-                }
-            }
-        }
-        this.setState({field: newField, dominantArea: newDominantArea});
-        fetch(`game/${this.props.id}`, {
+        fetch(`api/games/${this.props.gameId}`, {
             method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
             body: JSON.stringify({color: newColor})
         })
             .then(response => response.json())
