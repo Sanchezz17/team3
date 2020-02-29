@@ -4,7 +4,7 @@ import styles from './styles.css'
 export default class Field extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = { // todo: заменить потом на props
             width: props.width || 5,
             height: props.height || 5,
             field: props.field || [
@@ -19,10 +19,10 @@ export default class Field extends React.Component {
     }
 
     makeMove = (event) => {
-        const {field, dominantArea, width} = this.state;
+        const {field, width} = this.state; // todo: заменить на props
+        const dominantArea = this.state.dominantArea;
         const newColor = field[event.target.cellIndex + event.target.parentNode.rowIndex * width];
-        console.log(newColor);
-        // оптимистичный рендеринг
+        // оптимистичный рендеринг todo: после реализации сервера убрать
         const newField = field.slice();
         const newDominantArea = dominantArea.slice();
         for (const idx of newDominantArea) {
@@ -44,7 +44,7 @@ export default class Field extends React.Component {
     };
 
     getAdjacentCells = (idx) => {
-        const {width, height} = this.state;
+        const {width, height} = this.props;
         return [
             idx - 1,
             idx + 1,
@@ -55,7 +55,7 @@ export default class Field extends React.Component {
     };
 
     renderField = () => {
-        const {height} = this.state;
+        const {height} = this.props;
         const rows = [];
         for (let i = 0; i < height; i++) {
             rows.push(this.renderRow(i));
@@ -64,10 +64,10 @@ export default class Field extends React.Component {
     };
 
     renderRow = (rowNumber) => {
-        const {width} = this.state;
+        const {width} = this.props;
         const row = [];
         for (let i = 0; i < width; i++) {
-            const colorName = this.state.field[width * rowNumber + i];
+            const colorName = this.state.field[width * rowNumber + i]; //todo: после реализации сервера заменить на this.props.field[width * rowNumber + i]
             row.push(<td onClick={this.makeMove} className={styles[`color${colorName}`]}/>)
         }
         return <tr>{row}</tr>;
