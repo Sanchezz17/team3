@@ -13,30 +13,33 @@ export default class Field extends React.Component {
                 6, 7, 1, 2, 3,
                 0, 1, 2, 3, 4,
                 7, 6, 5, 4, 11
-            ]
+            ],
+            dominantArea: [0]
         };
     }
 
     makeMove = (event) => {
-        const {field} = this.state;
-        const newColor = parseInt(event.target.className.split('-')[0].split('color')[1]);
+        const {field, dominantArea, width} = this.state;
+        const newColor = field[event.target.cellIndex + event.target.parentNode.rowIndex * width];
+        console.log(newColor);
         // оптимистичный рендеринг
-        const leftCornerColor = this.state.field[0];
         const newField = field.slice();
-        newField[0] = newColor;
-        const cellsToRepaint = [];
-        const queue = [0];
+        const newDominantArea = dominantArea.slice();
+        for (const idx of newDominantArea) {
+            newField[idx] = newColor;
+        }
+        const queue = dominantArea.slice();
         while (queue.length) {
             const currentIdx = queue.shift();
             for (const idx of this.getAdjacentCells(currentIdx)) {
-                if ((field[idx] === newColor || field[idx] === leftCornerColor) && !cellsToRepaint.includes(idx)) {
-                    cellsToRepaint.push(idx);
+                if (field[idx] === newColor && !newDominantArea.includes(idx)) {
+                    newDominantArea.push(idx);
                     newField[idx] = newColor;
                     queue.push(idx);
                 }
             }
         }
-        this.setState({field: newField});
+        this.setState({field: newField, dominantArea: newDominantArea});
         // отправить запрос на бэк
     };
 
@@ -64,8 +67,8 @@ export default class Field extends React.Component {
         const {width} = this.state;
         const row = [];
         for (let i = 0; i < width; i++) {
-            row.push(<td onClick={this.makeMove}
-                         className={styles[`color${this.state.field[width * rowNumber + i]}`]}/>)
+            const colorName = this.state.field[width * rowNumber + i];
+            row.push(<td onClick={this.makeMove} className={styles[`color${colorName}`]}/>)
         }
         return <tr>{row}</tr>;
     };
