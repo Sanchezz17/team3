@@ -22,10 +22,21 @@ export default class Field extends React.Component {
         };
     }
 
-    makeMove = (event) => {
+    helpMove = (event) => {
+        const key = event.key.toLowerCase();
+        if (key === "h" || key === "р") {
+            const mainColor = this.state.field[0];
+            this.makeMove(this.state.field.findIndex((value, index) => value !== mainColor))
+        }
+    };
+
+    onClickMove = (event) => {
+        this.makeMove(event.target.cellIndex + event.target.parentNode.rowIndex * width);
+    };
+
+    makeMove = (idx) => {
         const {field, width} = this.state; // todo: заменить на props
-        const dominantArea = this.state.dominantArea;
-        const newColor = field[event.target.cellIndex + event.target.parentNode.rowIndex * width];
+        const newColor = field[idx];
         fetch(`api/games/${this.props.gameId}`, {
             method: "POST",
             headers: {
@@ -35,7 +46,10 @@ export default class Field extends React.Component {
         })
             .then(response => response.json())
             .then(response => {
-                this.setState({field: response.field, isFinished: response.isFinished});
+                this.setState({
+                    field: response.field,
+                    isFinished: response.isFinished
+                });
                 this.state.onChange(response.score);
             })
     };
@@ -60,7 +74,7 @@ export default class Field extends React.Component {
         for (let i = 0; i < height; i++) {
             rows.push(this.renderRow(i));
         }
-        return <table className={styles.field}>{rows}</table>
+        return <table tabIndex="0" onKeyDown={this.helpMove} className={styles.field}>{rows}</table>
     };
 
     renderRow = (rowNumber) => {
@@ -68,7 +82,7 @@ export default class Field extends React.Component {
         const row = [];
         for (let i = 0; i < width; i++) {
             const colorName = this.state.field[width * rowNumber + i]; //todo: после реализации сервера заменить на this.props.field[width * rowNumber + i]
-            row.push(<td onClick={this.makeMove} className={styles[`color${colorName}`]}/>)
+            row.push(<td onClick={this.onClickMove} className={styles[`color${colorName}`]}/>)
         }
         return <tr>{row}</tr>;
     };

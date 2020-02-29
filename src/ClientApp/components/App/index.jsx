@@ -24,13 +24,6 @@ export default class App extends React.Component {
 
     }
 
-    helpMove = (event) => {
-        const key = event.key.toLowerCase();
-        if (key === "h" || key === "р") {
-            // toDo fetch to backend
-        }
-    };
-
     startGame = (difficulty) => {
         fetch("/api/games", {
             method: "POST",
@@ -70,7 +63,7 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <div tabIndex="0" onKeyDown={this.helpMove} className={styles.root}>
+            <div className={styles.root}>
                 <div className={styles.score}>
                     Ваш счет: {this.state.score}
                 </div>
