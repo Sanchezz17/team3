@@ -8,7 +8,9 @@ namespace thegame.Game
     {
         public static readonly Dictionary<int, GameParameters> Difficulties = new Dictionary<int, GameParameters>
         {
-            [0] = new GameParameters(5, 5, 5)
+            [0] = new GameParameters(5, 5, 5),
+            [1] = new GameParameters(8, 8, 8),
+            [2] = new GameParameters(12, 12, 12)
         };
 
         public Guid GameId { get; }
