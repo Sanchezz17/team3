@@ -1,13 +1,15 @@
 import React from 'react';
 import styles from './styles.css';
 import Field from '../Field';
-import MainMenu from '../MainMenu';
+import Button from "@skbkontur/react-ui/Button";
+import Gapped from "@skbkontur/react-ui/Gapped";
 
 export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameStarted: true,
+            gameStarted: false,
+            mode: 0,
             id: null,
             width: null,
             height: null,
@@ -18,18 +20,27 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
+
+    }
+
+    helpMove = (event) => {
+        const key = event.key.toLowerCase();
+        if (key === "h" || key === "р") {
+            // toDo fetch to backend
+        }
+    };
+
+    startGame = (mode) => {
         fetch("https://gamehack03.azurewebsites.net/games", {
             method: "POST",
-            body: JSON.stringify(
-                {mode: 0}
-            )
-        })
+            body: JSON.stringify({mode})})
             .then(response => response.json())
             .then(data => this.setState({
                 id: data.id,
                 width: data.w,
                 height: data.h,
-                field: data.field
+                field: data.field,
+                gameStarted: true,
             }))
             .catch(e => {
                 this.setState({
@@ -42,17 +53,11 @@ export default class App extends React.Component {
                         6, 7, 1, 2, 3,
                         0, 1, 2, 3, 4,
                         7, 6, 5, 4, 3
-                    ]
+                    ],
+                    gameStarted: true,
                 });
                 console.error(e);
             });
-    }
-
-    helpMove = (event) => {
-        const key = event.key.toLowerCase();
-        if (key === "h" || key === "р") {
-            // toDo fetch to backend
-        }
     };
 
     render() {
@@ -64,7 +69,22 @@ export default class App extends React.Component {
                 <div className={styles.score}>
                     Время: {this.state.time}
                 </div>
-                {!this.state.gameStarted && <MainMenu/>}
+                {!this.state.gameStarted
+                && <div>
+                    <Gapped vertical={10}>
+                        <Button use='success' size='large' onClick={() => {
+                            this.startGame(0)
+                        }}>Новая игра (легкий)</Button>
+                        <Button use='success' size='large' onClick={() => {
+                            this.startGame(1)
+                        }}>Новая игра (средний)</Button>
+                        <Button use='success' size='large' onClick={() => {
+                            this.startGame(2)
+                        }}>Новая игра (сложный)</Button>
+                        <Button use='primary' size='large' onClick={() => {
+                        }}>Таблица лидеров</Button>
+                    </Gapped>
+                </div>}
                 {this.state.gameStarted &&
                 <Field field={this.state.field} width={this.state.width} height={this.state.height}/>}
             </div>

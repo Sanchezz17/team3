@@ -43,6 +43,8 @@ export default class Field extends React.Component {
         // отправить запрос на бэк
     };
 
+
+
     getAdjacentCells = (idx) => {
         const {width, height} = this.props;
         const result = [idx - width, idx + width];
